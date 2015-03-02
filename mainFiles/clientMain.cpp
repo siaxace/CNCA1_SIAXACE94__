@@ -14,8 +14,11 @@ int main ( int argc, char* argv[] )
 
 		try
 		{
-			client_socket << "Test message.";
-			client_socket >> reply;
+			for(int i=0; i<3; ++i)
+			{
+				client_socket << "Test message.";
+				client_socket >> reply;
+			}
 		}
 		catch ( SocketException& ) {}
 
