@@ -105,7 +105,7 @@ string ServerCoreClerk::voteFor(string uname,int ccode){
 		return "No such Candidate exists";
 	contributedClients.push_back(uname);
 	++votes[ccode];
-	return "Sucksexfully voted";
+	return "0";
 }
 
 void ServerCoreClerk::allResults(){

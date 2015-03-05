@@ -17,6 +17,7 @@ class ServerCoreClerk {
 		string doClientCommand(string command);
 		void doServerCommand();
 	private:
+		bool voteS;
 		time_t startTime,endTime;
 		map<int,int> votes;
 		map<int,string> code2Name_Candidate;

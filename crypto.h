@@ -13,6 +13,17 @@ const string pukey_adr="siamoz_public_key.pem";
 const string tempCipher_adr="siamoz_cipher.dat";
 const string tempAsciiPlain_adr="siamoz_askii_plain.txt";
 const string tempAscii_Bin_adr="siamoz_convertingAscii.dat";
+const string ca_pubkey_adr="siamoz_pubkey_ca_askii.txt";
+
+class compelete_kelid {
+	public:
+	compelete_kelid(void);
+	compelete_kelid(string pph, string ppr, string ppu, string pc);
+	string pu;
+	string pr;
+	string ph;
+	string cert;
+};
 
 class crypto
 {
@@ -30,23 +41,13 @@ class crypto
 
 		string signedOf(const string &message, const string &pr, const string &ph) const;
 		bool validSign(const string &message, const string &signedMessage, const string &pu) const;
-
-		bool getShowLog(void) const;
-		void setShowLog(bool b);
-
-	protected:
-
-
-		string shellCommand_suffix(void) const;
-
-		bool showLog;
 };
 
-string wholeAsciiFile(const string &url) const;
-void write2File_entire(const string &url, const string &s) const;
-void deleteFile(const string &url) const;
-void convert2Bin(const string &url) const;
-void convert2Ascii(const string &url) const;
+string wholeAsciiFile(const string &url);
+void write2File_entire(const string &url, const string &s);
+void deleteFile(const string &url);
+void convert2Bin(const string &url);
+void convert2Ascii(const string &url);
 
 int mySystem(const string &s);
 

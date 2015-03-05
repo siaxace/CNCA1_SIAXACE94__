@@ -1,40 +1,52 @@
 #include "crypto.h"
 
-string wholeAsciiFile(const string &url) const
+compelete_kelid::compelete_kelid(string pph, string ppr, string ppu, string pc)
+{
+	ph=pph;
+	pr=ppr;
+	pu=ppu;
+	cert=pc;
+}
+
+compelete_kelid::compelete_kelid(void)
+{
+	ph=pr=pu=cert="";
+}
+
+string wholeAsciiFile(const string &url)
 {
 	ifstream t(url.c_str());
 	return string((istreambuf_iterator<char>(t)), istreambuf_iterator<char>());
 }
 
-void write2File_entire(const string &url, const string &s) const
+void write2File_entire(const string &url, const string &s)
 {
 	ofstream out(url.c_str());
 	out<<s;
 	out.close();
 }
 
-void deleteFile(const string &url) const
+void deleteFile(const string &url)
 {
-	mySystem((string)"rm -f "+url+shellCommand_suffix());
+	mySystem((string)"rm -f "+url);
 }
 
-void convert2Bin(const string &url) const
+void convert2Bin(const string &url)
 {
-	mySystem((string)"xxd -r "+url+" > "+tempAscii_Bin_adr+shellCommand_suffix());
+	mySystem((string)"xxd -r "+url+" > "+tempAscii_Bin_adr);
 	deleteFile(url);
-	mySystem((string)"mv "+tempAscii_Bin_adr+" "+url+shellCommand_suffix());
+	mySystem((string)"mv "+tempAscii_Bin_adr+" "+url);
 }
 
-void convert2Ascii(const string &url) const
+void convert2Ascii(const string &url)
 {
-	mySystem((string)"xxd "+url+" > "+tempAscii_Bin_adr+shellCommand_suffix());
+	mySystem((string)"xxd "+url+" > "+tempAscii_Bin_adr);
 	deleteFile(url);
-	mySystem((string)"mv "+tempAscii_Bin_adr+" "+url+shellCommand_suffix());
+	mySystem((string)"mv "+tempAscii_Bin_adr+" "+url);
 }
 
 crypto::crypto(void)
 {
-	showLog=true;
 }
 
 crypto::~crypto(void)
@@ -43,9 +55,9 @@ crypto::~crypto(void)
 
 void crypto::genKey(const string &ph, string &pr, string &pu) const
 {
-	mySystem((string)"openssl genrsa -aes256 -passout pass:"+ph+" -out "+prkey_adr+" 1024"+shellCommand_suffix());
+	mySystem((string)"openssl genrsa -aes256 -passout pass:"+ph+" -out "+prkey_adr+" 1024");
 	mySystem((string)"openssl rsa -in "+
-			prkey_adr+" -passin pass:"+ph+" -out "+pukey_adr+" -outform PEM -pubout"+shellCommand_suffix());
+			prkey_adr+" -passin pass:"+ph+" -out "+pukey_adr+" -outform PEM -pubout");
 	convert2Ascii(prkey_adr);
 	convert2Ascii(pukey_adr);
 	pr=wholeAsciiFile(prkey_adr);
@@ -60,7 +72,7 @@ void crypto::encrypt(string &toBCoded, const string &pu) const
 	write2File_entire(tempAsciiPlain_adr,toBCoded);
 	convert2Bin(pukey_adr);
 	mySystem("openssl rsautl -encrypt -inkey "+
-			pukey_adr+" -pubin -in "+tempAsciiPlain_adr+" -out "+tempCipher_adr+shellCommand_suffix());
+			pukey_adr+" -pubin -in "+tempAsciiPlain_adr+" -out "+tempCipher_adr);
 	convert2Ascii(tempCipher_adr);
 	toBCoded=wholeAsciiFile(tempCipher_adr);
 	deleteFile(pukey_adr);
@@ -76,7 +88,7 @@ bool crypto::decrypt(string &toBDecoded, const string &pr, const string &ph) con
 	convert2Bin(tempCipher_adr);
 	convert2Bin(prkey_adr);
 	commandresult=mySystem("openssl rsautl -decrypt -passin pass:"
-			+ph+" -inkey "+prkey_adr+" -in "+tempCipher_adr+" -out "+tempAsciiPlain_adr+shellCommand_suffix());
+			+ph+" -inkey "+prkey_adr+" -in "+tempCipher_adr+" -out "+tempAsciiPlain_adr);
 	if(commandresult==0)
 		toBDecoded=wholeAsciiFile(tempAsciiPlain_adr);
 	deleteFile(tempCipher_adr);
@@ -92,7 +104,7 @@ string crypto::signedOf(const string &message, const string &pr, const string &p
 	write2File_entire(prkey_adr, pr);
 	convert2Bin(prkey_adr);
 	mySystem("openssl dgst -sha256 -sign "
-			+prkey_adr+" -passin pass:"+ph+" -out "+tempCipher_adr+" "+tempAsciiPlain_adr+shellCommand_suffix());
+			+prkey_adr+" -passin pass:"+ph+" -out "+tempCipher_adr+" "+tempAsciiPlain_adr);
 	convert2Ascii(tempCipher_adr);
 	result=wholeAsciiFile(tempCipher_adr);
 	deleteFile(prkey_adr);
@@ -110,29 +122,11 @@ bool crypto::validSign(const string &message, const string &signedMessage, const
 	convert2Bin(pukey_adr);
 	convert2Bin(tempCipher_adr);
 	commandresult=mySystem("openssl dgst -sha256 -verify "
-			+pukey_adr+" -signature "+tempCipher_adr+" "+tempAsciiPlain_adr+shellCommand_suffix());
+			+pukey_adr+" -signature "+tempCipher_adr+" "+tempAsciiPlain_adr);
 	deleteFile(pukey_adr);
 	deleteFile(tempCipher_adr);
 	deleteFile(tempAsciiPlain_adr);
 	return (commandresult==0);
-}
-
-bool crypto::getShowLog(void) const
-{
-	return showLog;
-}
-
-void crypto::setShowLog(bool b)
-{
-	showLog=b;
-}
-
-string crypto::shellCommand_suffix(void) const
-{
-	string result="";
-	if(!showLog)
-		result+=" >/dev/null 2>/dev/null ";
-	return result;
 }
 
 int mySystem(const string &s)
