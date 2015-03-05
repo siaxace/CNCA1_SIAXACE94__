@@ -135,6 +135,14 @@ int main(int argn, char** args){
 				}
 				else if(parse1=="Vote")
 				{
+					stringstream ss2;
+					string s1,s2;
+					ss2 << origin;
+					ss2 >> s1 >> s2;
+					if( keys.find( s2 )== keys.end()){
+						cout<<"A registeration is required"<<endl;
+						continue;	
+					}
 					stringstream ss;
 					int bytes_written = write(fd, origin.c_str(), origin.size());
 					if(bytes_written < 0){

@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <iostream>
 #include <string.h>
+#include <arpa/inet.h>
 #include "serverCore.h"
 using namespace std;
 
@@ -29,6 +30,17 @@ int main(int argn, char** args)
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_port = htons(port_number);
 	ServerCoreClerk scc;
+
+	int fdCA = socket(AF_INET,SOCK_STREAM, IPPROTO_TCP);
+	struct sockaddr_in ca_addr;
+	ca_addr.sin_family = AF_INET;
+	ca_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	ca_addr.sin_port = htons(2021);
+	int status2 = connect(fdCA, (struct sockaddr *)&ca_addr, sizeof(ca_addr));
+	string rawcer,cer;
+	rawcer = "salam";
+
+
 
 	struct sockaddr_in client_addr;
 	//binding 
