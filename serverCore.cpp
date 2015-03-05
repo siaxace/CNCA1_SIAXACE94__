@@ -1,6 +1,8 @@
 #include "serverCore.h"
 
-ServerCoreClerk::ServerCoreClerk(){}
+ServerCoreClerk::ServerCoreClerk(){
+	voteS = false;
+}
 
 int hourDigitalToInt(string t){
 	if(t.size()==4){
@@ -26,15 +28,19 @@ void ServerCoreClerk::doServerCommand(){
 	int temp,temp2,temp3,temp4;
 	cin>>comm;
 	if(comm == "Add"){
-		cin>>comm>>temp;
+		cin>>comm;
+		if(comm=="Candidate"){
+			cin>>comm>>temp;
+			addCandidate(comm,temp);
+		}
 	} else if( comm == "Show" ){
 		cin>>comm>>comm2;
 		if(comm == "All" && comm2 == "Results"){
-			cout<< candidateNames()<<endl;
+			allResults();
 		}
 	} else if( comm == "Set" ){
 		cin>>comm>>comm2;
-		if(comm == "Voting" && comm == "Time"){
+		if(comm == "Voting" && comm2 == "Time"){
 			cin>>comm>>comm2;
 			temp = hourDigitalToInt(comm);
 			temp2 = minDigitalToInt(comm);
@@ -42,7 +48,14 @@ void ServerCoreClerk::doServerCommand(){
 			temp4 = minDigitalToInt(comm2);
 			setVotingTime(temp,temp2,temp3,temp4);
 		}
-		cout<<comm<<" "<<comm2<<endl;
+	} else if(comm == "Extend"){
+		cin>>comm>>comm2;
+		if(comm == "Voting" && comm2 == "Time"){
+			cin>>comm;
+			temp = hourDigitalToInt(comm);
+			temp2 = minDigitalToInt(comm);
+			extendVotingTime(temp,temp2);			
+		}
 	}
 }
 string ServerCoreClerk::doClientCommand(string command){
@@ -56,7 +69,8 @@ string ServerCoreClerk::doClientCommand(string command){
 		if(streams=="Candidates"){
 			return candidateNames();	
 		}
-	} else if( streams == "vote"){
+	} else if( streams == "Vote"){
+		cerr<<"Voting procedure"<<endl;
 		ss >> streams >> temp;
 		return voteFor(streams,temp);
 	} 
@@ -65,6 +79,9 @@ string ServerCoreClerk::doClientCommand(string command){
 string ServerCoreClerk::candidateNames(){
 	string result="Candidate Names = \n";
 	for(map<int,string>::iterator it = code2Name_Candidate.begin();it!=code2Name_Candidate.end(); ++it){
+		stringstream ss;
+		ss<<it->first;
+		result+=ss.str()+"	";
 		result += it->second;
 		result += "\n";
 	}
@@ -72,6 +89,8 @@ string ServerCoreClerk::candidateNames(){
 }
 
 string ServerCoreClerk::voteFor(string uname,int ccode){
+	if(!voteS)
+		return "Initial voting Time has not been set\n";
 	//ex1 time pass
 	//ex2 double
 	//ex3 invalid code
@@ -90,11 +109,13 @@ string ServerCoreClerk::voteFor(string uname,int ccode){
 }
 
 void ServerCoreClerk::allResults(){
+	cout<<"All Results: \n";
 	for(map<int,int>::iterator it = votes.begin(); it!=votes.end(); ++it)
 		cout<<it->first<<"       "<< code2Name_Candidate[it->first] << "        "<< it->second<<endl;
 }
 
 void ServerCoreClerk::setVotingTime(int shour, int smin, int ehour, int emin){
+	voteS = true;
 	cout<<"SVT: "<<shour<<" "<<smin<<" "<<ehour<<" "<<emin<<endl;
 	struct tm* tms;
 	struct tm* tme;
