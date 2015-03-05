@@ -67,8 +67,8 @@ int main(int argn, char** args)
 		return -1;
 	}
 	serverKey=compelete_kelid(ph, pr, pu, cer);
-	cout<<"sucksexfully got certificate from ca\n";
-
+	cout<<"successfully got certificate from ca\n";
+	cout<<"Listening from socket ...\n";
 
 	struct sockaddr_in client_addr;
 	//binding 

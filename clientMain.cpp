@@ -72,15 +72,16 @@ int main(int argn, char** args){
 				ss >> parse1; //ssn
 				ss >>parse2>>parse3;
 				if(parse1 == "Show" && parse2=="Log"){
-					ss >> parse1 >> parse2;
-					if( parse1 == adminName && parse2 == adminPass ){
+					ss >> parse1 ;
+					if( parse3 == adminName && parse1 == adminPass ){
 						for(int i=0;i<participants.size();i++){
 							cout<<participants[i]<<endl;
 						}
 					}
+					else
+						cout<<"admin error\n";
 				} else if(parse1 == "Disconnect"){
-					ss>>parse1;
-					if(parse2 == adminName && parse1 == adminPass){
+					if(parse2 == adminName && parse3 == adminPass){
 						cout<<"Disconnected"<<endl;
 						break;
 					}
@@ -88,8 +89,8 @@ int main(int argn, char** args){
 				{
 					cout<<"REGS"<<endl;
 					string name,password,pu,pr, cer, rawcer;
-					ss>> parse1 >> parse2;
-					name = parse2;
+					ss>> parse1 >> parse2 >> parse3;
+					name = parse3;
 					ss>> parse1 >> parse2;
 					password = parse1;
 					if( parse1 != parse2)
