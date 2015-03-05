@@ -55,13 +55,15 @@ int main(int argn, char** args){
 			ca_addr.sin_port = htons(2021);
 			int status2 = connect(fdCA, (struct sockaddr *)&ca_addr, sizeof(ca_addr));
 			int status = connect(fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+			string chert;
+			getline(cin, chert);
 			
 			if(status < 0 || status2 < 0 )
 			{
 				cerr<<"Conention failed\n";
 				continue;
 			}
-			else cerr<<"Sucksexfully Connected\n";
+			else cerr<<"Successfully Connected\n";
 			while(1)
 			{
 				//read command
@@ -74,6 +76,7 @@ int main(int argn, char** args){
 				if(parse1 == "Show" && parse2=="Log"){
 					ss >> parse1 ;
 					if( parse3 == adminName && parse1 == adminPass ){
+						cout<<"participants:\n";
 						for(int i=0;i<participants.size();i++){
 							cout<<participants[i]<<endl;
 						}
@@ -84,6 +87,8 @@ int main(int argn, char** args){
 					if(parse2 == adminName && parse3 == adminPass){
 						cout<<"Disconnected"<<endl;
 						break;
+					} else {
+						cout<<"Admin error"<<endl;
 					}
 				} else if(parse1=="Register")
 				{
@@ -142,7 +147,6 @@ int main(int argn, char** args){
 					string s1,s2;
 					ss2 << origin;
 					ss2 >> s1 >> s2;
-					cerr<<"in vote participant: "<<s2<<endl;
 					if( keys.find( s2 )== keys.end()){
 						cout<<"A registeration is required"<<endl;
 						continue;	
