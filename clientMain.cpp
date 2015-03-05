@@ -111,9 +111,11 @@ int main(int argn, char** args){
 						if( !ramznegar.validSign(rawcer,cer,capu) ){
 							cout<<"Could not have a valid sign"<<endl;
 							continue;
-						} else 
+						} else {
+							cerr<<"in register name: "<<name<<endl;
 							keys[name] = compelete_kelid(password,pr,pu,cer);
-						cerr<<"Registration done"<<endl;
+							cerr<<"Registration done"<<endl;
+						}
 					}
 				}
 				else if(parse1=="Show" && parse2=="Candidates")
@@ -139,6 +141,7 @@ int main(int argn, char** args){
 					string s1,s2;
 					ss2 << origin;
 					ss2 >> s1 >> s2;
+					cerr<<"in vote participant: "<<s2<<endl;
 					if( keys.find( s2 )== keys.end()){
 						cout<<"A registeration is required"<<endl;
 						continue;	

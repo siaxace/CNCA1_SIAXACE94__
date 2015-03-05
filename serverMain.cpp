@@ -7,6 +7,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include "serverCore.h"
+#include "crypto.h"
 using namespace std;
 
 void clear_buff(char *x,size_t s){
@@ -30,6 +31,9 @@ int main(int argn, char** args)
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_port = htons(port_number);
 	ServerCoreClerk scc;
+	compelete_kelid serverKey;
+	crypto ramznegar;
+	string capu;
 
 	int fdCA = socket(AF_INET,SOCK_STREAM, IPPROTO_TCP);
 	struct sockaddr_in ca_addr;
@@ -37,9 +41,33 @@ int main(int argn, char** args)
 	ca_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	ca_addr.sin_port = htons(2021);
 	int status2 = connect(fdCA, (struct sockaddr *)&ca_addr, sizeof(ca_addr));
-	string rawcer,cer;
-	rawcer = "salam";
+	if(status2<0)
+	{
+		cout<<"could not connect to the ca\n";
+	}
+	string rawcer,cer, ph="serverSalam", pu, pr;
+	ramznegar.genKey(ph, pr, pu);
+	rawcer = "server";
+	rawcer+="\n";
+	rawcer+=pu;
+	capu=wholeAsciiFile(ca_pubkey_adr);
 
+	int bytes_written = write(fdCA, rawcer.c_str(), rawcer.size());	
+	if(bytes_written < 0){
+		cout<<"could not send message to ca\n"<<endl;
+		return -2;
+	}
+	char res_buff[STR_SIZE];
+	clear_buff(res_buff, STR_SIZE);
+	int read_status = read(fdCA, res_buff, STR_SIZE);
+	cer=res_buff;
+	if(!ramznegar.validSign(rawcer, cer, capu))
+	{
+		cout<<"could not get a valid certificate from ca\n";
+		return -1;
+	}
+	serverKey=compelete_kelid(ph, pr, pu, cer);
+	cout<<"sucksexfully got certificate from ca\n";
 
 
 	struct sockaddr_in client_addr;
